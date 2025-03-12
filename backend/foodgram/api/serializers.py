@@ -1,5 +1,5 @@
-import re
 import base64
+import re
 
 from django.core.files.base import ContentFile
 from djoser.serializers import UserCreateSerializer, UserSerializer
@@ -8,16 +8,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.validators import UniqueTogetherValidator
 
-from recipes.models import (
-    User,
-    Ingredient,
-    Tag,
-    Recipe,
-    RecipeIngredient,
-    Favorite,
-    ShoppingCart,
-    Subscribe,
-)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Subscribe, Tag, User)
 
 MIN_TIME = 1
 MAX_TIME = 100

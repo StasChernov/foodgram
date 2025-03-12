@@ -1,41 +1,29 @@
 import random
 import string
 
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.exceptions import ValidationError
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminAuthorOrReadOnly
-from api.serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    RecipeViewSerializer,
-    RecipeCreateUpdateSerializer,
-    UserRecipeSerializer,
-    AvatarSerializer,
-    SubscribeViewSerializer,
-    SubscribeCreateSerializer
-)
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    ShoppingCart,
-    Favorite,
-    User,
-    RecipeIngredient
-)
+from api.serializers import (AvatarSerializer, IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeViewSerializer, SubscribeCreateSerializer,
+                             SubscribeViewSerializer, TagSerializer,
+                             UserRecipeSerializer)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag, User)
 
 
 class TagViewSet(ModelViewSet):
