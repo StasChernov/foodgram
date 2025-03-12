@@ -17,13 +17,25 @@ from rest_framework.viewsets import ModelViewSet
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminAuthorOrReadOnly
-from api.serializers import (AvatarSerializer, IngredientSerializer,
-                             RecipeCreateUpdateSerializer,
-                             RecipeViewSerializer, SubscribeCreateSerializer,
-                             SubscribeViewSerializer, TagSerializer,
-                             UserRecipeSerializer)
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag, User)
+from api.serializers import (
+    AvatarSerializer, 
+    IngredientSerializer,
+    RecipeCreateUpdateSerializer,
+    RecipeViewSerializer,
+    SubscribeCreateSerializer,
+    SubscribeViewSerializer,
+    TagSerializer,
+    UserRecipeSerializer
+)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredient,
+    ShoppingCart,
+    Tag,
+    User
+)
 
 
 class TagViewSet(ModelViewSet):
