@@ -227,5 +227,6 @@ class RecipeViewSet(ModelViewSet):
 class ShortView(APIView):
 
     def get(self, request, short_link):
+        print('')
         recipe = get_object_or_404(Recipe, link=short_link)
         return HttpResponseRedirect(f'/recipes/{recipe.id}')
