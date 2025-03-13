@@ -27,7 +27,7 @@ DEBUG = bool(os.getenv('DEBUG', False))
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(', ')
 
-CSRF_TRUSTED_ORIGINS = ['https://chefoodgram.zapto.ru', 'http://127.0.0.1', 'http://localhost']
+CSRF_TRUSTED_ORIGINS = ['https://chefoodgram.zapto.org', 'http://127.0.0.1', 'http://localhost']
 
 # Application definition
 
