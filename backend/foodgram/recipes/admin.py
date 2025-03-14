@@ -23,6 +23,7 @@ class RecipeAdmin(admin.ModelAdmin):
     list_display_links = ('name',)
     filter_horizontal = ('tags', 'ingredients')
 
+    @admin.display(description='В избранном')
     def favorites_count(self, recipe):
         return recipe.favorites.count()
 
