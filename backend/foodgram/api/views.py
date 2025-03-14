@@ -1,41 +1,29 @@
 import random
 import string
 
-from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Sum
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.exceptions import ValidationError
 
 from api.filters import IngredientFilter, RecipeFilter
 from api.permissions import IsAdminAuthorOrReadOnly
-from api.serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    RecipeViewSerializer,
-    RecipeCreateUpdateSerializer,
-    UserRecipeSerializer,
-    AvatarSerializer,
-    SubscribeViewSerializer,
-    SubscribeCreateSerializer
-)
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    ShoppingCart,
-    Favorite,
-    User,
-    RecipeIngredient
-)
+from api.serializers import (AvatarSerializer, IngredientSerializer,
+                             RecipeCreateUpdateSerializer,
+                             RecipeViewSerializer, SubscribeCreateSerializer,
+                             SubscribeViewSerializer, TagSerializer,
+                             UserRecipeSerializer)
+from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
+                            ShoppingCart, Tag, User)
 
 
 class TagViewSet(ModelViewSet):
@@ -188,9 +176,6 @@ class RecipeViewSet(ModelViewSet):
     )
     def download_shopping_cart(self, request):
         user = request.user
-        if not user.shopping_carts.exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
         ingredients = (
             RecipeIngredient.objects.filter(
                 recipe__shopping_carts__user=request.user
@@ -210,9 +195,9 @@ class RecipeViewSet(ModelViewSet):
             amount = ingredient['ingredient_amount']
             shopping_list += f'\n{name} - {amount}/{unit}'
 
-        file_name = f"{user}_shopping_cart.txt"
+        file_name = f'shopping_cart.txt'
         response = HttpResponse(shopping_list, content_type="text/plain")
-        response["Content-Disposition"] = f"attachment; filename={file_name}"
+        response['Content-Disposition'] = f'attachment; filename={file_name}'
         return response
 
     @action(
@@ -239,5 +224,6 @@ class RecipeViewSet(ModelViewSet):
 class ShortView(APIView):
 
     def get(self, request, short_link):
+        print('')
         recipe = get_object_or_404(Recipe, link=short_link)
         return HttpResponseRedirect(f'/recipes/{recipe.id}')

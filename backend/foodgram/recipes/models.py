@@ -1,7 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 MAX_LENGTH = 50
 MAX_NAME_LENGTH = 150
 MAX_EMAIL_LENGTH = 254
