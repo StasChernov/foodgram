@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.db.models import Count
 
 from .models import (Favorite, Ingredient, Recipe, ShoppingCart, Subscribe,
                      Tag, User)
@@ -25,7 +24,7 @@ class RecipeAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags', 'ingredients')
 
     def favorites_count(self, recipe):
-        return recipe.favorites.Count()
+        return recipe.favorites.count()
 
 
 @admin.register(Subscribe)
