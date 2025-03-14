@@ -25,7 +25,7 @@ class RecipeAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags', 'ingredients')
 
     def favorites_count(self, recipe):
-        return recipe.favirite.Count()
+        return recipe.favorites.Count()
 
 
 @admin.register(Subscribe)
