@@ -1,0 +1,40 @@
+
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  db:
+    image: postgres:13.10
+    env_file: .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  frontend:
+    env_file: .env
+    image: schernovmail/foodgram_frontend
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static:/frontend_static
+      
+  backend:
+    image: schernovmail/foodgram_backend
+    env_file: .env
+    depends_on:
+      - db
+    volumes:
+      - static:/backend_static
+      - media:/app/media
+
+  gateway:
+    image: schernovmail/foodgram_gateway
+    env_file: .env
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - static:/staticfiles
+      - media:/media
+    ports:
+      - 7000:80
