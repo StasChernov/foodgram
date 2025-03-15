@@ -205,7 +205,7 @@ class RecipeViewSet(ModelViewSet):
         response = HttpResponse(file_content, content_type="text/plain")
         response['Content-Disposition'] = f'attachment; filename={file_name}'
         return response
-        
+
     @action(
         detail=True,
         methods=['get'],
