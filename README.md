@@ -4,12 +4,8 @@
 
 Foodgram - сервис для публикации рецептов.
 В данном сервисе пользователи могут делиться рецептами.
+Сервис доступен по адресу https://chefoodgram.zapto.org
 
-<<<<<<< HEAD
-Приложение доступно по адресу: https:\\chefoodgram.zapto.org
-
-=======
->>>>>>> 590e18ab030827a6c9b54624b03d87cf9d226724
 ## Используемые технологии
 
 ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
