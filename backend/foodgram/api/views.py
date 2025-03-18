@@ -137,7 +137,8 @@ class RecipeViewSet(ModelViewSet):
                     {'detail': f'Рецепт {recipe} уже добавлен в {message}.'}
                 )
             return Response(
-                UserRecipeSerializer(recipe).data, status=status.HTTP_201_CREATED
+                UserRecipeSerializer(recipe).data,
+                status=status.HTTP_201_CREATED
             )
         else:
             get_object_or_404(model, user=user, recipe=recipe).delete()
