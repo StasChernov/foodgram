@@ -7,4 +7,4 @@ from recipes.models import Recipe
 def short_link(request, id):
     if Recipe.objects.filter(id=id).exists():
         return redirect(f'/recipes/{id}')
-    raise ValidationError('Такого рецепта не существует!')
+    raise ValidationError(f'Рецепта с id {id} не существует!')

@@ -27,13 +27,13 @@ class TagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class UserSerializer(UserSerializer):
+class FoodgramUserSerializer(UserSerializer):
 
     is_subscribed = SerializerMethodField(read_only=True)
 
     class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + (
-            'avatar', 'is_subscribed'
+        fields = (
+            *UserSerializer.Meta.fields, 'avatar', 'is_subscribed'
         )
 
     def get_is_subscribed(self, author):
@@ -75,7 +75,7 @@ class RecipeViewSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True,
     )
-    author = UserSerializer(read_only=True,)
+    author = FoodgramUserSerializer(read_only=True,)
     ingredients = RecipeIngredientViewSerializer(
         many=True,
         read_only=True,
@@ -103,7 +103,7 @@ class RecipeViewSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    def get_field(self, recipe, model):
+    def create_favorite_and_cart_fields(self, recipe, model):
         user = self.context.get('request').user
         return (
             user.is_authenticated
@@ -111,10 +111,10 @@ class RecipeViewSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, recipe):
-        return self.get_field(recipe, Favorite)
+        return self.create_favorite_and_cart_fields(recipe, Favorite)
 
     def get_is_in_shopping_cart(self, recipe):
-        return self.get_field(recipe, ShoppingCart)
+        return self.create_favorite_and_cart_fields(recipe, ShoppingCart)
 
 
 class IngredientCreateSerializer(serializers.ModelSerializer):
@@ -132,12 +132,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     ingredients = IngredientCreateSerializer(many=True)
     image = Base64ImageField()
-    author = UserSerializer(read_only=True)
 
     class Meta:
         model = Recipe
         fields = (
-            'author',
             'ingredients',
             'tags',
             'image',
@@ -146,20 +144,29 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
+    @staticmethod
+    def field_validate(data, message):
+        data_list = []
+        duplicates = []
+        for item in data:
+            if item in data_list:
+                if message in 'Продукт':
+                    duplicates.append(item['id'].name)
+                else:
+                    duplicates.append(item.name)
+            data_list.append(item)
+        if duplicates:
+            raise ValidationError(
+                f'{message} {", ".join(set(duplicates))} повторяется.'
+            )
+        return data_list
+
     def validate(self, data):
         if not data.get('ingredients'):
-            raise ValidationError('Рецепт должен содержать ингредиенты.')
+            raise ValidationError('Рецепт должен содержать продукты.')
         if not data.get('tags'):
             raise ValidationError('Рецепт должен содержать теги.')
         return data
-
-    def field_validate(self, data, message):
-        data_list = []
-        for item in data:
-            if item in data_list:
-                raise ValidationError(f'{message} {item} повторяется!')
-            data_list.append(item)
-        return data_list
 
     def validate_ingredients(self, ingredients):
         return self.field_validate(ingredients, 'Продукт')
@@ -203,6 +210,7 @@ class UserRecipeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Recipe
         fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = fields
 
 
 class AvatarSerializer(serializers.ModelSerializer):
@@ -214,13 +222,14 @@ class AvatarSerializer(serializers.ModelSerializer):
         fields = ('avatar',)
 
 
-class SubscribersViewSerializer(UserSerializer):
+class SubscribersViewSerializer(FoodgramUserSerializer):
 
     recipes = SerializerMethodField()
     recipes_count = IntegerField(source='recipes.count', read_only=True)
 
-    class Meta(UserSerializer.Meta):
-        fields = UserSerializer.Meta.fields + (
+    class Meta(FoodgramUserSerializer.Meta):
+        fields = (
+            *FoodgramUserSerializer.Meta.fields,
             'recipes',
             'recipes_count',
         )

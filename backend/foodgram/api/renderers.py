@@ -1,5 +1,8 @@
 from datetime import datetime
 
+PRODUCT = '{} {} - {}/{}'
+RECIPE = '{} {} от {}'
+
 
 def cart_render(ingredients, recipes):
     date = datetime.now().strftime('%Y-%m-%d')
@@ -7,18 +10,29 @@ def cart_render(ingredients, recipes):
     ingredient_header = 'Список продуктов:'
     recipe_header = 'Для рецептов:'
     products_list = [(
-        f'{i} {ingredient["ingredient__name"]} - '
-        f'{ingredient["amount"]}/'
-        f'{ingredient["ingredient__measurement_unit"]}'
+        PRODUCT.format(
+            i,
+            ingredient['ingredient__name'],
+            ingredient['amount'],
+            ingredient['ingredient__measurement_unit']
+        )
     )
         for i, ingredient in enumerate(ingredients, start=1)
     ]
     recipes_list = [(
-        f'{i} {recipe["recipe__name"]} '
-        f'от {recipe["recipe__author__first_name"]} '
-        f'{recipe["recipe__author__last_name"]}'
+        RECIPE.format(
+            i,
+            recipe['recipe__name'],
+            recipe['recipe__author__username']
+        )
     )
-        for i, recipe in enumerate(recipes, start=1)
+        for i, recipe in enumerate(
+            recipes.values(
+                'recipe__name', 'recipe__author__username'
+            )
+            .distinct()
+            .order_by('recipe__name'),
+            start=1)
     ]
     return '\n'.join([
         list_header,

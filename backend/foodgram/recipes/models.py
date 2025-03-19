@@ -1,11 +1,6 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
-
-from recipes.validators import (
-    username_validator,
-    amount_validator,
-    cooking_time_validator
-)
 
 
 MAX_LENGTH = 50
@@ -14,6 +9,8 @@ MAX_NAME_LENGTH = 150
 MAX_EMAIL_LENGTH = 254
 MAX_RECIPE_NAME_LENGTH = 256
 MAX_INGREDIENT_NAME_LENGTH = 128
+MIN_TIME = 1
+MIN_AMOUNT = 1
 
 
 class User(AbstractUser):
@@ -27,8 +24,12 @@ class User(AbstractUser):
     username = models.CharField(
         max_length=MAX_NAME_LENGTH,
         unique=True,
-        verbose_name='Имя пользователя',
-        validators=(username_validator,)
+        verbose_name='Логин',
+        validators=(
+            RegexValidator(
+                regex=r'^[\w.@+-]+\Z'
+            ),
+        )
     )
     first_name = models.CharField(
         max_length=MAX_NAME_LENGTH,
@@ -63,13 +64,13 @@ class Subscribe(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Подписчик',
-        related_name='subscriber',
+        related_name='subscribers',
     )
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
-        related_name='following',
+        related_name='authors',
     )
 
     class Meta:
@@ -154,28 +155,23 @@ class Recipe(models.Model):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор',
-        related_name='recipes'
     )
     ingredients = models.ManyToManyField(
         Ingredient,
         through='RecipeIngredient',
         verbose_name='Ингредиенты',
-        related_name='recipes'
     )
     cooking_time = models.PositiveIntegerField(
         verbose_name='Время приготовления',
-        validators=(cooking_time_validator,)
+        validators=(MinValueValidator(MIN_TIME),)
     )
     tags = models.ManyToManyField(
         Tag,
         verbose_name='Теги',
-        related_name='recipes'
-    )
-    link = models.CharField(
-        max_length=5, unique=True, null=True
     )
 
     class Meta:
+        default_related_name = 'recipes'
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
 
@@ -190,20 +186,19 @@ class RecipeIngredient(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         verbose_name='Рецепт',
-        related_name='recipe_ingredients'
     )
     ingredient = models.ForeignKey(
         Ingredient,
         on_delete=models.CASCADE,
         verbose_name='Ингредиент',
-        related_name='recipe_ingredients'
     )
     amount = models.PositiveSmallIntegerField(
         verbose_name='Количество',
-        validators=(amount_validator,)
+        validators=(MinValueValidator(MIN_AMOUNT),)
     )
 
     class Meta:
+        default_related_name = 'recipe_ingredients'
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты в рецептах'
 
@@ -233,7 +228,7 @@ class BaseFavoriteCartModel(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=['user', 'recipe'],
-                name='unique_user_recipe',
+                name='unique_%(class)s',
             )
         ]
 
@@ -244,7 +239,7 @@ class BaseFavoriteCartModel(models.Model):
 class Favorite(BaseFavoriteCartModel):
     """Модель избранного."""
 
-    class Meta:
+    class Meta(BaseFavoriteCartModel.Meta):
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
         default_related_name = 'favorites'
@@ -253,7 +248,7 @@ class Favorite(BaseFavoriteCartModel):
 class ShoppingCart(BaseFavoriteCartModel):
     """Модель списка покупок."""
 
-    class Meta:
+    class Meta(BaseFavoriteCartModel.Meta):
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_carts'
