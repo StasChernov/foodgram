@@ -8,19 +8,28 @@ Foodgram - сервис для публикации рецептов.
 
 ## Используемые технологии
 
-- ![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white) Python
-- ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) Docker
-- ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white) Nginx
-- ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) Rect
-- ![Postgres](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white) PostgreSQL
+![Django](https://img.shields.io/badge/django-%23092E20.svg?style=for-the-badge&logo=django&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![Postgres](https://img.shields.io/badge/Postgres-%23316192.svg?logo=postgresql&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?logo=sqlite&logoColor=white)
+![Django](https://img.shields.io/badge/Django-%23092E20.svg?logo=django&logoColor=white)
 
+- Python
+- Docker
+- Nginx
+- React
+- PostgreSQL
+- SQLite
+- Django
 
 ## Запуск проекта
 
-1. Скопируйте репозиторий себе на компьютер.
+1. Склонируйте репозиторий себе на компьютер.
 
 ```bash
-https://github.com/StasChernov/foodgram.git
+git clone https://github.com/StasChernov/foodgram.git
 ```
 
 2. Перейдите в папку с проектом
@@ -70,10 +79,10 @@ docker compose -f docker-compose.yml exec backend python manage.py load_json_tag
 ```
 
 ## Локальный запуск проекта без Docker
-1. Скопируйте репозиторий себе на компьютер.
+1. Склонируйте репозиторий себе на компьютер.
 
 ```bash
-https://github.com/StasChernov/foodgram.git
+git clone https://github.com/StasChernov/foodgram.git
 ```
 
 2. Перейдите в папку с проектом
@@ -127,11 +136,18 @@ python manage.py load_json_tags
 python manage.py runserver
 ```
 
+9. Ссылки:
+
+После запуска проекта будут доступны следующие ссылки:
+
+[Админка](http://127.0.0.1:8000/admin/)
+[API](http://127.0.0.1:8000/api/)
+
 ## Доступ к документации по API
 
 Перейдите в папку infra репозитория, выполните команду docker-compose up. При выполнении этой команды контейнер frontend, описанный в docker-compose.yml, подготовит файлы, необходимые для работы фронтенд-приложения, а затем прекратит свою работу.
 
-По адресу http://localhost изучите фронтенд веб-приложения, а по адресу http://localhost/api/docs/ — спецификацию API.
+По адресу [Фронтенд](http://localhost) изучите фронтенд веб-приложения, а по адресу [Docs](http://localhost/api/docs/) — спецификацию API.
 
 ## Автор проекта
 [Станислав Чернов](https://github.com/StasChernov)
