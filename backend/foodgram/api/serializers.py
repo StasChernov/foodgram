@@ -103,7 +103,7 @@ class RecipeViewSerializer(serializers.ModelSerializer):
             'cooking_time'
         )
 
-    def create_favorite_and_cart_fields(self, recipe, model):
+    def calculation_fields(self, recipe, model):
         user = self.context.get('request').user
         return (
             user.is_authenticated
@@ -111,10 +111,10 @@ class RecipeViewSerializer(serializers.ModelSerializer):
         )
 
     def get_is_favorited(self, recipe):
-        return self.create_favorite_and_cart_fields(recipe, Favorite)
+        return self.calculation_fields(recipe, Favorite)
 
     def get_is_in_shopping_cart(self, recipe):
-        return self.create_favorite_and_cart_fields(recipe, ShoppingCart)
+        return self.calculation_fields(recipe, ShoppingCart)
 
 
 class IngredientCreateSerializer(serializers.ModelSerializer):
@@ -144,23 +144,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    @staticmethod
-    def field_validate(data, message):
-        data_list = []
-        duplicates = []
-        for item in data:
-            if item in data_list:
-                if message in 'Продукт':
-                    duplicates.append(item['id'].name)
-                else:
-                    duplicates.append(item.name)
-            data_list.append(item)
-        if duplicates:
-            raise ValidationError(
-                f'{message} {", ".join(set(duplicates))} повторяется.'
-            )
-        return data_list
-
     def validate(self, data):
         if not data.get('ingredients'):
             raise ValidationError('Рецепт должен содержать продукты.')
@@ -168,8 +151,26 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             raise ValidationError('Рецепт должен содержать теги.')
         return data
 
+    @staticmethod
+    def field_validate(field_data, message):
+        data_list = []
+        duplicates = []
+        for item in field_data:
+            if item in data_list:
+                duplicates.append(item.name)
+            data_list.append(item)
+        if duplicates:
+            raise ValidationError(
+                f'{message} {set(duplicates)} повторяется.'
+            )
+        return data_list
+
     def validate_ingredients(self, ingredients):
-        return self.field_validate(ingredients, 'Продукт')
+        ingredients_list = [
+            ingredient['id'] for ingredient in ingredients
+        ]
+        self.field_validate(ingredients_list, 'Продукт')
+        return ingredients
 
     def validate_tags(self, tags):
         return self.field_validate(tags, 'Тэг')
@@ -195,7 +196,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         tags = validated_data.pop('tags')
         instance.tags.clear()
         instance.tags.set(tags)
-        RecipeIngredient.objects.filter(recipe=instance).delete()
+        instance.recipe_ingredients.all().delete()
         self.create_ingredients(instance, ingredients)
         return super().update(instance, validated_data)
 

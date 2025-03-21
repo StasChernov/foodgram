@@ -1,7 +1,9 @@
 import json
 
+from django.core.management.base import BaseCommand
 
-class LoadJson:
+
+class LoadJson(BaseCommand):
 
     def handle(self, *args, **options):
         try:
@@ -13,9 +15,19 @@ class LoadJson:
                 amount = len(self.model.objects.bulk_create(
                     items, ignore_conflicts=True
                 ))
+                if (
+                    (amount % 100) % 10 == 1
+                    or amount % 10 > 4
+                    or amount % 10 == 0
+                ):
+                    ending = 'ов'
+                elif amount % 10 == 1:
+                    ending = ''
+                ending = 'a'
                 print(
                     f'Добавлено {amount} '
-                    f'{self.message} из фала {self.filename}.'
+                    f'{self.model._meta.verbose_name.title().lower()}{ending} '
+                    f'из фала {self.filename}.'
                 )
         except Exception as e:
-            print(f'Ошибка: {e}')
+            print(f'Ошибка при работе с файлом {self.filename}: {e}')

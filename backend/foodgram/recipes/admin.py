@@ -78,8 +78,19 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Продукты')
     @mark_safe
     def get_ingredients(self, recipe):
+        resipe_ingredient = '{name} {amount}/{unit}'
         return '<br>'.join(
-            ingredient.name for ingredient in recipe.ingredients.all()
+            resipe_ingredient.format(
+                name=ingredient.name,
+                amount=(
+                    ingredient
+                    .recipe_ingredients
+                    .filter(recipe=recipe)
+                    .values('amount')
+                    .get()['amount']
+                ),
+                unit=ingredient.measurement_unit
+            ) for ingredient in recipe.ingredients.all()
         )
 
 

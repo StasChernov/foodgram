@@ -210,7 +210,7 @@ class RecipeIngredient(models.Model):
         )
 
 
-class BaseFavoriteCartModel(models.Model):
+class BaseModel(models.Model):
 
     user = models.ForeignKey(
         User,
@@ -236,19 +236,19 @@ class BaseFavoriteCartModel(models.Model):
         return f'{self.user} - {self.recipe}'
 
 
-class Favorite(BaseFavoriteCartModel):
+class Favorite(BaseModel):
     """Модель избранного."""
 
-    class Meta(BaseFavoriteCartModel.Meta):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
         default_related_name = 'favorites'
 
 
-class ShoppingCart(BaseFavoriteCartModel):
+class ShoppingCart(BaseModel):
     """Модель списка покупок."""
 
-    class Meta(BaseFavoriteCartModel.Meta):
+    class Meta(BaseModel.Meta):
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_carts'

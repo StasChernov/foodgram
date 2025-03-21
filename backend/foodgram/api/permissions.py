@@ -2,7 +2,7 @@ from rest_framework import permissions
 
 
 class IsAuthorOrReadOnly(permissions.BasePermission):
-    """Права доступа для автора и администратора."""
+    """Права доступа для автора."""
 
     def has_object_permission(self, request, view, obj):
         return (

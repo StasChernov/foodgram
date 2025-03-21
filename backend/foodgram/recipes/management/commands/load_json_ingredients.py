@@ -1,11 +1,8 @@
-from django.core.management.base import BaseCommand
-
 from recipes.models import Ingredient
 from .loadjson import LoadJson
 
 
-class Command(LoadJson, BaseCommand):
+class Command(LoadJson):
 
     filename = 'ingredients.json'
     model = Ingredient
-    message = 'продуктов'
