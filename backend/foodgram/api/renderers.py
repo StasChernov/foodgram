@@ -32,9 +32,7 @@ def cart_render(ingredients, recipes):
             username=recipe.recipe.author.username
         )
     )
-        for i, recipe in enumerate(
-            recipes, start=1
-        )
+        for i, recipe in enumerate(recipes, start=1)
     ]
     return '\n'.join([
         list_header,
