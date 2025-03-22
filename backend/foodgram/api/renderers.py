@@ -3,7 +3,7 @@ import locale
 
 locale.setlocale(
     category=locale.LC_ALL,
-    locale='Russian'
+    locale='ru_RU.UTF-8'
 )
 
 PRODUCT = '{count} {name} - {amount}/{unit}'

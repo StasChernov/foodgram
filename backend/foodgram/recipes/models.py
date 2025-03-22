@@ -162,7 +162,7 @@ class Recipe(models.Model):
         verbose_name='Ингредиенты',
     )
     cooking_time = models.PositiveIntegerField(
-        verbose_name='Время приготовления',
+        verbose_name='Время (мин)',
         validators=(MinValueValidator(MIN_TIME),)
     )
     tags = models.ManyToManyField(
