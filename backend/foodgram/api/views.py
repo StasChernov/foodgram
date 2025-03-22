@@ -192,7 +192,7 @@ class RecipeViewSet(ModelViewSet):
         buffer = io.BytesIO()
         buffer.write(report)
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename="report.txt")
+        return FileResponse(buffer, as_attachment=True, filename="repsghdshdgort.txt")
 
     @action(
         detail=True,
