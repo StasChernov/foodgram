@@ -15,19 +15,10 @@ class LoadJson(BaseCommand):
                 amount = len(self.model.objects.bulk_create(
                     items, ignore_conflicts=True
                 ))
-                if (
-                    (amount % 100) % 10 == 1
-                    or amount % 10 > 4
-                    or amount % 10 == 0
-                ):
-                    ending = 'ов'
-                elif amount % 10 == 1:
-                    ending = ''
-                ending = 'a'
                 print(
                     f'Добавлено {amount} '
-                    f'{self.model._meta.verbose_name.title().lower()}{ending} '
-                    f'из фала {self.filename}.'
+                    f'{self.model._meta.verbose_name} '
+                    f'из файла {self.filename}.'
                 )
         except Exception as e:
             print(f'Ошибка при работе с файлом {self.filename}: {e}')

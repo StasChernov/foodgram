@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -170,6 +170,7 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
+        user = request.user
         ingredients = (
             RecipeIngredient.objects.filter(
                 recipe__shopping_carts__user=request.user
@@ -181,13 +182,12 @@ class RecipeViewSet(ModelViewSet):
             .annotate(amount=Sum('amount'))
             .order_by('ingredient__name')
         )
-        recipe_ingredient = (
-            RecipeIngredient.objects.filter(
-                recipe__shopping_carts__user=request.user
-            )
+        recipes = (
+            user.shopping_carts.all()
         )
+
         return FileResponse(
-            cart_render(ingredients, recipe_ingredient),
+            cart_render(ingredients, recipes),
             as_attachment=True,
             filename='shopping_cart.txt'
         )

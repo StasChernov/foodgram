@@ -1,11 +1,17 @@
 from datetime import datetime
+import locale
+
+locale.setlocale(
+    category=locale.LC_ALL,
+    locale='Russian'
+)
 
 PRODUCT = '{count} {name} - {amount}/{unit}'
 RECIPE = '{count} {name} от {username}'
 
 
-def cart_render(ingredients, recipe_ingredient):
-    date = datetime.now().strftime('%Y-%m-%d')
+def cart_render(ingredients, recipes):
+    date = datetime.now().strftime('%Y-%B-%d')
     list_header = f'Список покупок от: {date}'
     ingredient_header = 'Список продуктов:'
     recipe_header = 'Для рецептов:'
@@ -22,17 +28,13 @@ def cart_render(ingredients, recipe_ingredient):
     recipes_list = [(
         RECIPE.format(
             count=i,
-            name=recipe_ingredient['recipe__name'],
-            username=recipe_ingredient['recipe__author__username']
+            name=recipe.recipe.name,
+            username=recipe.recipe.author.username
         )
     )
-        for i, recipe_ingredient in enumerate(
-            recipe_ingredient.values(
-                'recipe__name', 'recipe__author__username'
-            )
-            .distinct()
-            .order_by('recipe__name'),
-            start=1)
+        for i, recipe in enumerate(
+            recipes, start=1
+        )
     ]
     return '\n'.join([
         list_header,

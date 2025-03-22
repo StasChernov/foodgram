@@ -1,4 +1,5 @@
 import base64
+from collections import Counter
 
 from django.core.files.base import ContentFile
 from djoser.serializers import UserSerializer
@@ -153,17 +154,15 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     @staticmethod
     def field_validate(field_data, message):
-        data_list = []
-        duplicates = []
-        for item in field_data:
-            if item in data_list:
-                duplicates.append(item.name)
-            data_list.append(item)
+        duplicates = [
+            ingredient.name
+            for ingredient, count in Counter(field_data).items() if count > 1
+        ]
         if duplicates:
             raise ValidationError(
-                f'{message} {set(duplicates)} повторяется.'
+                f'{message} {duplicates} повторяется.'
             )
-        return data_list
+        return field_data
 
     def validate_ingredients(self, ingredients):
         ingredients_list = [

@@ -1,6 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
+
+from django.urls import reverse
+
 from django.utils.safestring import mark_safe
 
 from .models import (
@@ -23,7 +26,7 @@ class RecipesCountMixin():
 
     list_display = ('recipes_count',)
 
-    @admin.display(description='Количество рецептов')
+    @admin.display(description='Рецептов')
     def recipes_count(self, ingredient):
         return ingredient.recipes.count()
 
@@ -60,6 +63,7 @@ class RecipeAdmin(admin.ModelAdmin):
         'get_image'
     )
     list_display_links = ('name',)
+    list_filter = ('author',)
 
     @admin.display(description='В избранном')
     def favorites_count(self, recipe):
@@ -78,19 +82,13 @@ class RecipeAdmin(admin.ModelAdmin):
     @admin.display(description='Продукты')
     @mark_safe
     def get_ingredients(self, recipe):
-        resipe_ingredient = '{name} {amount}/{unit}'
+        ingredient = '{name} {amount}/{unit}'
         return '<br>'.join(
-            resipe_ingredient.format(
-                name=ingredient.name,
-                amount=(
-                    ingredient
-                    .recipe_ingredients
-                    .filter(recipe=recipe)
-                    .values('amount')
-                    .get()['amount']
-                ),
-                unit=ingredient.measurement_unit
-            ) for ingredient in recipe.ingredients.all()
+            ingredient.format(
+                name=recipe_ingredient.ingredient.name,
+                amount=recipe_ingredient.amount,
+                unit=recipe_ingredient.ingredient.measurement_unit
+            ) for recipe_ingredient in recipe.recipe_ingredients.all()
         )
 
 
@@ -145,11 +143,18 @@ class UserAdmin(RecipesCountMixin, UserAdmin):
         'get_avatar',
         *RecipesCountMixin.list_display,
         'get_subscriptions_count',
-        'get_subscribers_count'
+        'get_subscribers_count',
+        'password_change'
     )
     list_display_links = ('username',)
     search_fields = ('username', 'email')
     list_filter = (RecipesFilter, SubscriptionsFilter, SubscribersFilter)
+
+    @admin.display(description='Изменение пароля')
+    @mark_safe
+    def password_change(self, user):
+        url = reverse('admin:auth_user_password_change', args=(user.id,))
+        return f'<a href="{url}">Изменить пароль</a>'
 
     @admin.display(description='ФИО')
     def get_full_name(self, user):

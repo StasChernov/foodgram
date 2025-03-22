@@ -169,8 +169,10 @@ class Recipe(models.Model):
         Tag,
         verbose_name='Теги',
     )
+    pub_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
+        ordering = ('-pub_date',)
         default_related_name = 'recipes'
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
@@ -210,7 +212,7 @@ class RecipeIngredient(models.Model):
         )
 
 
-class BaseModel(models.Model):
+class BaseRelationModel(models.Model):
 
     user = models.ForeignKey(
         User,
@@ -236,19 +238,19 @@ class BaseModel(models.Model):
         return f'{self.user} - {self.recipe}'
 
 
-class Favorite(BaseModel):
+class Favorite(BaseRelationModel):
     """Модель избранного."""
 
-    class Meta(BaseModel.Meta):
+    class Meta(BaseRelationModel.Meta):
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранное'
         default_related_name = 'favorites'
 
 
-class ShoppingCart(BaseModel):
+class ShoppingCart(BaseRelationModel):
     """Модель списка покупок."""
 
-    class Meta(BaseModel.Meta):
+    class Meta(BaseRelationModel.Meta):
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
         default_related_name = 'shopping_carts'
