@@ -4,7 +4,7 @@ PRODUCT = '{count} {name} - {amount}/{unit}'
 RECIPE = '{count} {name} от {username}'
 
 
-def cart_render(ingredients, recipes):
+def cart_render(ingredients, recipe_ingredient):
     date = datetime.now().strftime('%Y-%m-%d')
     list_header = f'Список покупок от: {date}'
     ingredient_header = 'Список продуктов:'
@@ -19,15 +19,20 @@ def cart_render(ingredients, recipes):
     )
         for i, ingredient in enumerate(ingredients, start=1)
     ]
-    print(recipes)
     recipes_list = [(
         RECIPE.format(
             count=i,
-            name=recipe.recipe.name,
-            username=recipe.recipe.author
+            name=recipe_ingredient['recipe__name'],
+            username=recipe_ingredient['recipe__author__username']
         )
     )
-        for i, recipe in enumerate(recipes, start=1)
+        for i, recipe_ingredient in enumerate(
+            recipe_ingredient.values(
+                'recipe__name', 'recipe__author__username'
+            )
+            .distinct()
+            .order_by('recipe__name'),
+            start=1)
     ]
     return '\n'.join([
         list_header,

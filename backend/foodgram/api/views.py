@@ -170,7 +170,6 @@ class RecipeViewSet(ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        user = request.user
         ingredients = (
             RecipeIngredient.objects.filter(
                 recipe__shopping_carts__user=request.user
@@ -182,15 +181,15 @@ class RecipeViewSet(ModelViewSet):
             .annotate(amount=Sum('amount'))
             .order_by('ingredient__name')
         )
-        recipes = (
+        recipe_ingredient = (
             RecipeIngredient.objects.filter(
                 recipe__shopping_carts__user=request.user
-            ).distinct('recipe')
+            )
         )
         return FileResponse(
-            cart_render(ingredients, recipes),
+            cart_render(ingredients, recipe_ingredient),
             as_attachment=True,
-            filename=f'{user}_shopping_cart.txt'
+            filename='shopping_cart.txt'
         )
 
     @action(
