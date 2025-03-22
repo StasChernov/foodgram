@@ -1,5 +1,5 @@
 from django.db.models import Sum
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.urls import reverse
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
@@ -186,11 +186,17 @@ class RecipeViewSet(ModelViewSet):
             user.shopping_carts.all()
         )
 
-        return FileResponse(
-            cart_render(ingredients, recipes),
-            as_attachment=True,
-            filename='shopping_cart.txt'
+        response = HttpResponse(
+            [1, 2, 3], content_type="text.txt; charset=utf-8"
         )
+        response["Content-Disposition"] = f"attachment; filename='temp.tzt'"
+        return response
+
+        # return FileResponse(
+        #     cart_render(ingredients, recipes),
+        #     as_attachment=True,
+        #     filename='shopping_cart.txt'
+        # )
 
     @action(
         detail=True,
