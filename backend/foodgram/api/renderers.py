@@ -1,7 +1,7 @@
 from datetime import datetime
 
-PRODUCT = '{} {} - {}/{}'
-RECIPE = '{} {} от {}'
+PRODUCT = '{count} {name} - {amount}/{unit}'
+RECIPE = '{count} {name} от {username}'
 
 
 def cart_render(ingredients, recipes):
@@ -11,28 +11,23 @@ def cart_render(ingredients, recipes):
     recipe_header = 'Для рецептов:'
     products_list = [(
         PRODUCT.format(
-            i,
-            ingredient['ingredient__name'],
-            ingredient['amount'],
-            ingredient['ingredient__measurement_unit']
+            count=i,
+            name=ingredient['ingredient__name'].capitalize(),
+            amount=ingredient['amount'],
+            unit=ingredient['ingredient__measurement_unit']
         )
     )
         for i, ingredient in enumerate(ingredients, start=1)
     ]
+    print(recipes)
     recipes_list = [(
         RECIPE.format(
-            i,
-            recipe['recipe__name'],
-            recipe['recipe__author__username']
+            count=i,
+            name=recipe.recipe.name,
+            username=recipe.recipe.author
         )
     )
-        for i, recipe in enumerate(
-            recipes.values(
-                'recipe__name', 'recipe__author__username'
-            )
-            .distinct()
-            .order_by('recipe__name'),
-            start=1)
+        for i, recipe in enumerate(recipes, start=1)
     ]
     return '\n'.join([
         list_header,
