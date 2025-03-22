@@ -2,8 +2,6 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
 
-from django.urls import reverse
-
 from django.utils.safestring import mark_safe
 
 from .models import (
@@ -141,20 +139,14 @@ class UserAdmin(RecipesCountMixin, UserAdmin):
         'get_full_name',
         'email',
         'get_avatar',
+        'avatar',
         *RecipesCountMixin.list_display,
         'get_subscriptions_count',
         'get_subscribers_count',
-        'password_change'
     )
     list_display_links = ('username',)
     search_fields = ('username', 'email')
     list_filter = (RecipesFilter, SubscriptionsFilter, SubscribersFilter)
-
-    @admin.display(description='Изменение пароля')
-    @mark_safe
-    def password_change(self, user):
-        url = reverse('admin:auth_user_password_change', args=(user.id,))
-        return f'<a href="{url}">Изменить пароль</a>'
 
     @admin.display(description='ФИО')
     def get_full_name(self, user):

@@ -1,10 +1,4 @@
 from datetime import datetime
-import locale
-
-locale.setlocale(
-    category=locale.LC_ALL,
-    locale='ru_RU.UTF-8'
-)
 
 PRODUCT = '{count} {name} - {amount}/{unit}'
 RECIPE = '{count} {name} от {username}'
