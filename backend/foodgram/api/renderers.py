@@ -1,4 +1,9 @@
+import locale
 from datetime import datetime
+
+
+locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
+
 
 PRODUCT = '{count} {name} - {amount}/{unit}'
 RECIPE = '{count} {name} от {username}'
