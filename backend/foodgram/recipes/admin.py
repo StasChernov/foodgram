@@ -40,7 +40,11 @@ class TagAdmin(RecipesCountMixin, admin.ModelAdmin):
 class IngredientInline(admin.StackedInline):
     model = RecipeIngredient
     extra = 0
-    fields = ('ingredient', 'amount')
+    fields = (
+        'ingredient',
+        'amount',
+        'ingredient.measurement_unit'
+    )
 
 
 @admin.register(Recipe)

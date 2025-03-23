@@ -1,5 +1,3 @@
-import io
-
 from django.db.models import Sum
 from django.http import FileResponse
 from django.urls import reverse
@@ -185,12 +183,10 @@ class RecipeViewSet(ModelViewSet):
             .order_by('ingredient__name')
         )
         recipes = (user.shopping_carts.all())
-        buffer = io.BytesIO()
-        buffer.write(
-            bytes(cart_render(ingredients, recipes), encoding='utf-8')
+        return FileResponse(
+            cart_render(ingredients, recipes),
+            as_attachment=True, filename="list.txt"
         )
-        buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename="list.txt")
 
     @action(
         detail=True,
