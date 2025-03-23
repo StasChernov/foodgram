@@ -184,15 +184,13 @@ class RecipeViewSet(ModelViewSet):
             .annotate(amount=Sum('amount'))
             .order_by('ingredient__name')
         )
-        recipes = (
-            user.shopping_carts.all()
-        )
-        report_data = cart_render(ingredients, recipes)
-        report = bytes(report_data, encoding='utf-8')
+        recipes = (user.shopping_carts.all())
         buffer = io.BytesIO()
-        buffer.write(report)
+        buffer.write(
+            bytes(cart_render(ingredients, recipes), encoding='utf-8')
+        )
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename="repsghdshdgort.txt")
+        return FileResponse(buffer, as_attachment=True, filename="list.txt")
 
     @action(
         detail=True,
