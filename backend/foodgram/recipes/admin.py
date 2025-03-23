@@ -7,7 +7,8 @@ from django.utils.safestring import mark_safe
 from .models import (
     Favorite, Ingredient,
     Recipe, ShoppingCart,
-    Subscribe, Tag, User
+    Subscribe, Tag, User,
+    RecipeIngredient
 )
 
 
@@ -29,23 +30,17 @@ class RecipesCountMixin():
         return ingredient.recipes.count()
 
 
-@admin.register(Ingredient)
-class IngredientAdmin(RecipesCountMixin, admin.ModelAdmin):
-    list_display = (
-        'id',
-        'name',
-        'measurement_unit',
-        *RecipesCountMixin.list_display)
-    list_display_links = ('name',)
-    search_fields = ('name', 'measurement_unit')
-    list_filter = ('measurement_unit',)
-
-
 @admin.register(Tag)
 class TagAdmin(RecipesCountMixin, admin.ModelAdmin):
     list_display = ('id', 'name', 'slug', *RecipesCountMixin.list_display)
     list_display_links = ('name',)
     search_fields = ('name', 'slug')
+
+
+class IngredientInline(admin.StackedInline):
+    model = RecipeIngredient
+    extra = 0
+    fields = ('ingredient', 'amount')
 
 
 @admin.register(Recipe)
@@ -62,6 +57,7 @@ class RecipeAdmin(admin.ModelAdmin):
     )
     list_display_links = ('name',)
     list_filter = ('author',)
+    inlines = (IngredientInline,)
 
     @admin.display(description='В избранном')
     def favorites_count(self, recipe):
@@ -108,9 +104,9 @@ class UserFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == 'yes':
-            return queryset.filter(**{self.parameter_name: False})
+            return queryset.filter(**{self.parameter_name: False}).distinct()
         if self.value() == 'no':
-            return queryset.filter(**{self.parameter_name: True})
+            return queryset.filter(**{self.parameter_name: True}).distinct()
 
 
 class RecipesFilter(UserFilter):
@@ -131,6 +127,18 @@ class SubscribersFilter(UserFilter):
     parameter_name = 'authors__isnull'
 
 
+@admin.register(Ingredient)
+class IngredientAdmin(RecipesCountMixin, admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+        'measurement_unit',
+        *RecipesCountMixin.list_display)
+    list_display_links = ('name',)
+    search_fields = ('name', 'measurement_unit')
+    list_filter = ('measurement_unit', RecipesFilter)
+
+
 @admin.register(User)
 class UserAdmin(RecipesCountMixin, UserAdmin):
     list_display = (
@@ -139,7 +147,6 @@ class UserAdmin(RecipesCountMixin, UserAdmin):
         'get_full_name',
         'email',
         'get_avatar',
-        'avatar',
         *RecipesCountMixin.list_display,
         'get_subscriptions_count',
         'get_subscribers_count',
@@ -147,6 +154,10 @@ class UserAdmin(RecipesCountMixin, UserAdmin):
     list_display_links = ('username',)
     search_fields = ('username', 'email')
     list_filter = (RecipesFilter, SubscriptionsFilter, SubscribersFilter)
+    fieldsets = UserAdmin.fieldsets + (
+        ('Изменить аватар',
+         {'fields': ('avatar',)}),
+    )
 
     @admin.display(description='ФИО')
     def get_full_name(self, user):
