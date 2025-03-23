@@ -190,7 +190,7 @@ class RecipeViewSet(ModelViewSet):
             bytes(cart_render(ingredients, recipes), encoding='utf-8')
         )
         buffer.seek(0)
-        return FileResponse(buffer, as_attachment=True, filename="list.txt")
+        return FileResponse(buffer, as_attachment=True)
 
     @action(
         detail=True,
