@@ -50,7 +50,7 @@ class IngredientInline(admin.StackedInline):
     @admin.display(description='Мера')
     @mark_safe
     def unit(self, recipeingredient):
-        url = reverse("admin:%s_%s_change" % (
+        url = reverse('admin:%s_%s_change' % (
             recipeingredient.ingredient._meta.app_label,
             recipeingredient.ingredient._meta.model_name
         ), args=(recipeingredient.ingredient.pk,))
