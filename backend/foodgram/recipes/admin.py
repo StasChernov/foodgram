@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import Group
-from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 from .models import (
@@ -37,26 +36,13 @@ class TagAdmin(RecipesCountMixin, admin.ModelAdmin):
     search_fields = ('name', 'slug')
 
 
-class IngredientInline(admin.StackedInline):
+class IngredientInline(admin.TabularInline):
     model = RecipeIngredient
-    extra = 0
+    extra = 1
     fields = (
         'ingredient',
         'amount',
-        'unit',
     )
-    readonly_fields = ('unit',)
-
-    @admin.display(description='Мера')
-    @mark_safe
-    def unit(self, recipeingredient):
-        url = reverse('admin:%s_%s_change' % (
-            recipeingredient.ingredient._meta.app_label,
-            recipeingredient.ingredient._meta.model_name
-        ), args=(recipeingredient.ingredient.pk,))
-        return '<a href="%s">%s</a>' % (
-            url, recipeingredient.ingredient.measurement_unit
-        )
 
 
 @admin.register(Recipe)

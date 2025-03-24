@@ -134,7 +134,7 @@ class Ingredient(models.Model):
         ]
 
     def __str__(self):
-        return self.name
+        return f'{self.name} /{self.measurement_unit}'
 
 
 class Recipe(models.Model):
@@ -205,11 +205,7 @@ class RecipeIngredient(models.Model):
         verbose_name_plural = 'Продукты в рецептах'
 
     def __str__(self):
-        return (
-            f'{self.recipe.name}: '
-            f'{self.ingredient.name} - '
-            f'{self.amount}'
-        )
+        return f'{self.ingredient.name}, {self.ingredient.measurement_unit}'
 
 
 class BaseUserRecipesModel(models.Model):
